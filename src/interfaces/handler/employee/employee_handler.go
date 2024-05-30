@@ -29,8 +29,25 @@ func (h *Handler) CreateRol(c echo.Context) error {
 	employee := c.Get("employee").(domain.Employee)
 
 	if err := c.Bind(rol); err != nil {
-		return utils.GenericResponse(c, http.StatusCreated, true, "error create", nil)
+		return utils.GenericResponse(c, http.StatusBadRequest, true, "error create", nil)
 	}
 	rol.IpsId = employee.IpsId
+	if err := h.UseCase.CreateRol(*rol); err != nil {
+		return utils.GenericResponse(c, http.StatusBadRequest, true, "error create", nil)
+	}
 	return utils.GenericResponse(c, http.StatusCreated, true, "rol create successfully", nil)
+}
+
+func (h *Handler) CreateAppointmentStep(c echo.Context) error {
+	appointmentStep := new(domain.AppointmentStep)
+
+	if err := c.Bind(appointmentStep); err != nil {
+		return utils.GenericResponse(c, http.StatusBadRequest, false, "error create", nil)
+	}
+
+	if err := h.UseCase.CreateAppointmentStep(*appointmentStep); err != nil {
+		return utils.GenericResponse(c, http.StatusBadRequest, false, "error create", nil)
+	}
+
+	return utils.GenericResponse(c, http.StatusCreated, true, "step create successfully", nil)
 }

@@ -8,7 +8,8 @@ import (
 )
 
 type UseCase struct {
-	Repository domain.EmployeesRepository
+	Repository                   domain.EmployeesRepository
+	MedicalAppointmentRepository domain.MedicalAppointmentRepository
 }
 
 func (uc *UseCase) Create(employee domain.Employee) error {
@@ -44,4 +45,8 @@ func (uc *UseCase) Login(credentials domain.Login) (string, error) {
 
 func (uc *UseCase) UpdatePassword(credentials domain.Login) error {
 	return uc.Repository.UpdatePassword(credentials)
+}
+
+func (uc *UseCase) CreateAppointmentStep(appointmentStep domain.AppointmentStep) error {
+	return uc.MedicalAppointmentRepository.CreateAppointmentStep(appointmentStep)
 }

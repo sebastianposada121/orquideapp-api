@@ -14,4 +14,5 @@ func InitControllers(e *echo.Echo, db *sql.DB) {
 	IpsController(g, db)
 	BeneficiaryController(g, db)
 	EmployeeController(g, db)
+	MedicalAppointmentController(g, db)
 }

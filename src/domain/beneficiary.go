@@ -9,8 +9,6 @@ type BeneficiaryRepository interface {
 	Create(user Beneficiary) error
 	GetAllByBranchOfficeID(branchOfficeId int) (Beneficiaries, error)
 	UpdatePassword(credentials Login) error
-	CreateMedicalAppointment(medicalAppointment MedicalAppointment) (int, error)
-	MedicalAppointments(id int) (MedicalAppointments, error)
 }
 
 type Beneficiary struct {
@@ -31,14 +29,3 @@ type Beneficiary struct {
 }
 
 type Beneficiaries []Beneficiary
-
-type MedicalAppointment struct {
-	ID              int       `json:"id"`
-	BeneficiaryID   int       `json:"beneficiary_id"`
-	Active          bool      `json:"active"`
-	ServiceID       int       `json:"service_id"`
-	AppointmentDate time.Time `json:"appointment_date"`
-	Description     string    `json:"description"`
-}
-
-type MedicalAppointments []MedicalAppointment

@@ -60,3 +60,14 @@ func (h *Handler) CreateMedicalAppointment(c echo.Context) error {
 
 	return utils.GenericResponse(c, http.StatusCreated, true, "create medical appointment", nil)
 }
+
+func (h Handler) GetAllMedicalAppointmentById(c echo.Context) error {
+	beneficiary := c.Get("beneficiary").(domain.Beneficiary)
+	medicalEndpoiments, err := h.UseCase.GetAllMedicalAppointmentById(beneficiary.ID)
+
+	if err != nil {
+		return utils.GenericResponse(c, http.StatusBadRequest, false, err.Error(), nil)
+	}
+
+	return utils.GenericResponse(c, http.StatusAccepted, true, "success get", medicalEndpoiments)
+}

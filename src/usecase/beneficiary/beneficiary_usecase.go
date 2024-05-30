@@ -2,15 +2,14 @@ package beneficiary_usecase
 
 import (
 	"errors"
-	"fmt"
 	"orquideapp/src/domain"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UseCase struct {
-	Repository                domain.BeneficiaryRepository
-	AppointmentStepRepository domain.AppointmentStepRepository
+	Repository                   domain.BeneficiaryRepository
+	MedicalAppointmentRepository domain.MedicalAppointmentRepository
 }
 
 func (uc *UseCase) Create(beneficiary domain.Beneficiary) error {
@@ -32,8 +31,12 @@ func (uc *UseCase) UpdatePassword(credentials domain.Login) error {
 	return uc.Repository.UpdatePassword(credentials)
 }
 
+func (uc *UseCase) GetAllMedicalAppointmentById(id int) (domain.MedicalAppointments, error) {
+	return uc.MedicalAppointmentRepository.GetAllMedicalAppointmentByBeneficiaryID(id)
+}
+
 func (uc *UseCase) CreateMedicalAppointment(medicalAppointment domain.MedicalAppointment) error {
-	medicalAppointments, err := uc.Repository.MedicalAppointments(medicalAppointment.BeneficiaryID)
+	medicalAppointments, err := uc.MedicalAppointmentRepository.GetAllMedicalAppointmentByBeneficiaryID(medicalAppointment.BeneficiaryID)
 
 	if err != nil {
 		return err
@@ -42,40 +45,29 @@ func (uc *UseCase) CreateMedicalAppointment(medicalAppointment domain.MedicalApp
 	for index := range medicalAppointments {
 
 		if medicalAppointments[index].Active {
-			fmt.Println(medicalAppointments[index])
 			return errors.New("active medical appointment")
 		}
 	}
 
-	id, err := uc.Repository.CreateMedicalAppointment(medicalAppointment)
+	id, err := uc.MedicalAppointmentRepository.CreateMedicalAppointment(medicalAppointment)
 
-	fmt.Println(id)
 	if err != nil {
 		return err
 	}
 
-	// appointmentStep := domain.AppointmentStep{
-	// 	Name:                 "cita consultorio general",
-	// 	MedicalAppointmentID: id,
-	// 	Status:               "complete",
-	// }
+	appointmentStep := domain.AppointmentStep{
+		Name:                 "Confirmacion cita medica",
+		MedicalAppointmentID: id,
+		Status:               "pending",
+	}
 
-	// if err := uc.AppointmentStepRepository.Create(appointmentStep); err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
-
-	fmt.Println(id)
+	if err := uc.MedicalAppointmentRepository.CreateAppointmentStep(appointmentStep); err != nil {
+		return err
+	}
 
 	return err
 }
 
 func (uc *UseCase) GetByEmail(email string) (domain.Beneficiary, error) {
 	return uc.Repository.GetByEmail(email)
-}
-
-func (uc UseCase) CreateAppointmentStepRepository(appointmentStep domain.AppointmentStep) error {
-
-	return uc.AppointmentStepRepository.Create(appointmentStep)
-
 }

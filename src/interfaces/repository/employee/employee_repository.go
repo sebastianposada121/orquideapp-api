@@ -16,8 +16,8 @@ func (r *Repository) Create(employee domain.Employee) error {
 }
 
 func (r *Repository) CreateRol(rol domain.Rol) error {
-	query := "INSERT INTO roles (name, description) VALUES (?, ?)"
-	_, err := r.DB.Exec(query, rol.Name, rol.Description)
+	query := "INSERT INTO roles (name, description, ips_id) VALUES (?, ?, ?)"
+	_, err := r.DB.Exec(query, rol.Name, rol.Description, rol.IpsId)
 	return err
 }
 

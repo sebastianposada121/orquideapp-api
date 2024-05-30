@@ -39,23 +39,6 @@ func (r *Repository) UpdatePassword(credentials domain.Login) error {
 	return err
 }
 
-func (r *Repository) CreateMedicalAppointment(medicalEndpoint domain.MedicalAppointment) (int, error) {
-	query := "INSERT INTO medical_appointments (beneficiary_id, appointment_date, service_id, description) VALUES (?, ?, ?, ?)"
-	result, err := r.DB.Exec(query, medicalEndpoint.BeneficiaryID, medicalEndpoint.AppointmentDate, medicalEndpoint.ServiceID, medicalEndpoint.Description)
-
-	if err != nil {
-		return -1, err
-	}
-
-	id, err := result.LastInsertId()
-
-	if err != nil {
-		return int(id), err
-	}
-
-	return int(id), err
-}
-
 func (r *Repository) GetByEmail(email string) (domain.Beneficiary, error) {
 	benefeciary := domain.Beneficiary{}
 	query := "SELECT id, email, name, password FROM beneficiaries WHERE email = ?"
@@ -66,22 +49,4 @@ func (r *Repository) GetByEmail(email string) (domain.Beneficiary, error) {
 	}
 
 	return benefeciary, nil
-}
-
-func (r *Repository) MedicalAppointments(id int) (domain.MedicalAppointments, error) {
-	medicalAppointmens := domain.MedicalAppointments{}
-	query := "SELECT id, active, description, service_id, appointment_date FROM medical_appointments WHERE beneficiary_id = ?"
-	data, err := r.DB.Query(query, id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	for data.NextResultSet() {
-		medicalAppointment := domain.MedicalAppointment{}
-		data.Scan(&medicalAppointment.ID, &medicalAppointment.Active, &medicalAppointment.Description, &medicalAppointment.ServiceID, &medicalAppointment.AppointmentDate)
-		medicalAppointmens = append(medicalAppointmens, medicalAppointment)
-	}
-
-	return medicalAppointmens, nil
 }
